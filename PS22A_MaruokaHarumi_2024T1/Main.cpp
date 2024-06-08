@@ -239,8 +239,9 @@ public:
 class Title {
 public:
 
-	void Start() {
-	}
+	Title() : font(50) {}
+	Font font;
+	void Start() {}
 
 	void Update(GameManager* gameManager);
 };
@@ -288,15 +289,14 @@ public:
 	GameClear() {}
 	~GameClear() {}
 
-	void Start() {
-	}
+	void Start() {}
 
 	void Update(GameManager* gameManager);
 };;
 
 class GameManager {
 public:
-	GameManager() : title(), playing() {}
+	GameManager() : title(), playing(), gameClear() {}
 	~GameManager() {}
 
 	enum class State {
@@ -340,6 +340,7 @@ void Bricks::Intersects(Ball* const target, Score* const score, GameManager* gam
 		return;
 	}
 
+	// ブロックとボールの衝突を検知
 	auto ball = target->GetCircle();
 
 	for (int i = 0; i < MAX; ++i) {
@@ -383,6 +384,7 @@ void Paddle::Intersects(Ball* const target) const {
 	auto velocity = target->GetVelocity();
 	auto ball = target->GetCircle();
 
+	// パドルとの衝突を検知
 	if ((0 < velocity.y) && paddle.intersects(ball))
 	{
 		target->SetVelocity(Vec2{
@@ -394,6 +396,10 @@ void Paddle::Intersects(Ball* const target) const {
 
 void Title::Update(GameManager* gameManager) {
 
+	// タイトルを表示。
+	font(U"Breakout!").drawAt(Scene::Width() / 2, Scene::Height() / 2 - 100);
+
+	// インゲームに遷移するボタンを表示。
 	float buttonWidth = 200;
 	if (SimpleGUI::Button(U"Game Start!", { Scene::Width() / 2 - buttonWidth / 2,Scene::Height() / 2 }, buttonWidth)) {
 		gameManager->ChangeState(GameManager::State::PLAYING);
@@ -420,6 +426,7 @@ void BallManager::Draw(Ball* const ball, GameManager* gameManager) const {
 }
 
 void GameClear::Update(GameManager* gameManager) {
+	// タイトルに戻るボタンを表示。
 	if (SimpleGUI::Button(U"Game Clear!", { Scene::Width() / 2 - 100,Scene::Height() / 2 }, 200)) {
 		gameManager->ChangeState(GameManager::State::TITLE);
 	}
